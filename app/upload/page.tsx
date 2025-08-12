@@ -1,113 +1,81 @@
-"use client"
+"use client";
 
-import type React from "react"
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import {
+  Upload,
+  FileText,
+  ArrowLeft,
+  Brain,
+  CheckCircle,
+  AlertCircle,
+} from "lucide-react";
+import Link from "next/link";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { Badge } from "@/components/ui/badge"
-import { Upload, FileText, ArrowLeft, CheckCircle, AlertCircle, Brain } from "lucide-react"
-import Link from "next/link"
+import { uploadFiles } from "../../service";
 
 interface UploadedFile {
-  id: number
-  name: string
-  size: string
-  status: "uploading" | "processing" | "completed" | "error"
-  progress: number
+  id: number;
+  name: string;
+  size: string;
+  status: "uploading" | "processing" | "completed" | "error";
+  progress: number;
 }
 
 export default function UploadPage() {
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
-  const [isDragOver, setIsDragOver] = useState(false)
+  const router = useRouter();
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [results, setResults] = useState<{
+    metadata: any[];
+    validation: any[];
+  } | null>(null);
 
-  const handleFileUpload = (files: FileList | null) => {
-    if (!files) return
+  // Handle file selection from input
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    setSelectedFiles(Array.from(e.target.files));
+  };
 
-    const newFiles: UploadedFile[] = Array.from(files).map((file, index) => ({
-      id: Date.now() + index,
-      name: file.name,
-      size: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
-      status: "uploading",
-      progress: 0,
-    }))
-
-    setUploadedFiles((prev) => [...prev, ...newFiles])
-
-    // Simulate upload and processing
-    newFiles.forEach((file, index) => {
-      // Simulate upload progress
-      const uploadInterval = setInterval(() => {
-        setUploadedFiles((prev) =>
-          prev.map((f) => (f.id === file.id && f.progress < 100 ? { ...f, progress: f.progress + 10 } : f)),
-        )
-      }, 200)
-
-      // Complete upload and start processing
-      setTimeout(
-        () => {
-          clearInterval(uploadInterval)
-          setUploadedFiles((prev) =>
-            prev.map((f) => (f.id === file.id ? { ...f, status: "processing", progress: 100 } : f)),
-          )
-
-          // Complete processing
-          setTimeout(
-            () => {
-              setUploadedFiles((prev) => prev.map((f) => (f.id === file.id ? { ...f, status: "completed" } : f)))
-            },
-            3000 + index * 1000,
-          )
-        },
-        2000 + index * 500,
-      )
-    })
-  }
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragOver(true)
-  }
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragOver(false)
-  }
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragOver(false)
-    handleFileUpload(e.dataTransfer.files)
-  }
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "completed":
-        return <CheckCircle className="h-4 w-4 text-green-500" />
-      case "error":
-        return <AlertCircle className="h-4 w-4 text-red-500" />
-      case "processing":
-        return <Brain className="h-4 w-4 text-blue-500 animate-pulse" />
-      default:
-        return <Upload className="h-4 w-4 text-gray-500" />
+  // Upload files to backend
+  const handleUpload = async () => {
+    if (selectedFiles.length === 0) {
+      alert("Please select files to upload.");
+      return;
     }
-  }
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "completed":
-        return <Badge className="bg-green-100 text-green-800">Completed</Badge>
-      case "error":
-        return <Badge variant="destructive">Error</Badge>
-      case "processing":
-        return <Badge className="bg-blue-100 text-blue-800">AI Processing</Badge>
-      case "uploading":
-        return <Badge variant="secondary">Uploading</Badge>
-      default:
-        return <Badge variant="outline">Pending</Badge>
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await uploadFiles(selectedFiles);
+      setResults(data);
+      router.push("/classification");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError(String(err));
+      }
     }
-  }
+
+    setLoading(false);
+  };
+
+  // Helpers to format file size nicely
+  const formatSize = (size: number) =>
+    size > 1024 * 1024
+      ? (size / (1024 * 1024)).toFixed(2) + " MB"
+      : (size / 1024).toFixed(2) + " KB";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
@@ -123,8 +91,10 @@ export default function UploadPage() {
                 </Button>
               </Link>
               <div className="flex items-center space-x-2">
-                <Upload className="h-6 w-6 text-blue-600" />
-                <span className="text-lg font-semibold text-gray-900">Upload Case Studies</span>
+                <Upload className="h-6 w-6 text-sky-800" />
+                <span className="text-lg font-semibold text-gray-900">
+                  Upload Case Studies
+                </span>
               </div>
             </div>
           </div>
@@ -136,37 +106,60 @@ export default function UploadPage() {
         <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <Brain className="h-5 w-5 text-blue-600" />
+              <Brain className="h-5 w-5 text-sky-800" />
               <span>AI-Powered File Upload</span>
             </CardTitle>
             <CardDescription>
-              Upload your case study files and let our AI agents automatically analyze and categorize them
+              Upload your case study files and let our AI agents automatically
+              analyze and categorize them
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div
-              className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                isDragOver ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-blue-400 hover:bg-blue-50"
-              }`}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-            >
-              <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Drop your case study files here</h3>
-              <p className="text-gray-600 mb-4">or click to browse and select multiple files</p>
+            <div className="text-center">
               <input
                 type="file"
                 multiple
-                accept=".pdf,.doc,.docx,.txt"
-                onChange={(e) => handleFileUpload(e.target.files)}
-                className="hidden"
+                accept=".pdf,.pptx"
+                onChange={handleFileChange}
                 id="file-upload"
+                className="hidden"
               />
-              <label htmlFor="file-upload">
-                <Button className="bg-blue-600 hover:bg-blue-700">Select Files</Button>
+              <label htmlFor="file-upload" className="cursor-pointer">
+                <span className="inline-block border-2 hover:border-transparent border-black bg-white text-black hover:bg-sky-800 hover:text-white px-4 py-2 rounded">
+                  Select Files from Device
+                </span>
               </label>
-              <p className="text-sm text-gray-500 mt-4">Supported formats: PDF, DOC, DOCX, TXT (Max 10MB per file)</p>
+
+              <p className="text-sm text-gray-500 mt-4">
+                Supported formats: PDF, PPTX (Max 10MB per file)
+              </p>
+
+              {selectedFiles.length > 0 && (
+                <div className="mt-4 text-left">
+                  <h4 className="font-semibold mb-1">Selected Files:</h4>
+                  <ul className="list-disc list-inside space-y-1">
+                    {selectedFiles.map((file, idx) => (
+                      <li key={idx}>
+                        {file.name} ({formatSize(file.size)})
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <div className="mt-6">
+                <Button
+                  className="bg-sky-800 hover:bg-sky-700 cursor-pointer"
+                  onClick={handleUpload}
+                  disabled={loading}
+                >
+                  {loading ? "Uploading..." : "Upload and Process"}
+                </Button>
+              </div>
+
+              {error && (
+                <p className="mt-4 text-red-600 font-semibold">{error}</p>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -176,11 +169,15 @@ export default function UploadPage() {
           <CardContent className="p-6">
             <div className="flex items-start space-x-4">
               <div className="p-2 bg-blue-100 rounded-lg">
-                <Brain className="h-6 w-6 text-blue-600" />
+                <Brain className="h-6 w-6 text-sky-800" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">AI Agent Processing</h3>
-                <p className="text-gray-600 mb-3">Our intelligent AI agents will automatically:</p>
+                <h3 className="font-semibold text-gray-900 mb-2">
+                  AI Agent Processing
+                </h3>
+                <p className="text-gray-600 mb-3">
+                  Our intelligent AI agents will automatically:
+                </p>
                 <ul className="space-y-1 text-sm text-gray-600">
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
@@ -204,69 +201,60 @@ export default function UploadPage() {
           </CardContent>
         </Card>
 
-        {/* Uploaded Files */}
-        {uploadedFiles.length > 0 && (
+        {/* Show results table if available */}
+        {/* {results && results.metadata && results.metadata.length > 0 && (
           <Card>
             <CardHeader>
-              <CardTitle>Uploaded Files</CardTitle>
-              <CardDescription>Track the progress of your file uploads and AI processing</CardDescription>
+              <CardTitle>Processed Case Studies Metadata</CardTitle>
+              <CardDescription>Summary of your uploaded files</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {uploadedFiles.map((file) => (
-                  <div key={file.id} className="border rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center space-x-3">
-                        {getStatusIcon(file.status)}
-                        <div>
-                          <p className="font-medium text-gray-900">{file.name}</p>
-                          <p className="text-sm text-gray-500">{file.size}</p>
-                        </div>
-                      </div>
-                      {getStatusBadge(file.status)}
-                    </div>
-
-                    {file.status === "uploading" && (
-                      <div className="space-y-2">
-                        <Progress value={file.progress} className="h-2" />
-                        <p className="text-sm text-gray-600">Uploading... {file.progress}%</p>
-                      </div>
-                    )}
-
-                    {file.status === "processing" && (
-                      <div className="flex items-center space-x-2">
-                        <Brain className="h-4 w-4 text-blue-500 animate-pulse" />
-                        <p className="text-sm text-blue-600">AI agents are analyzing this file...</p>
-                      </div>
-                    )}
-
-                    {file.status === "completed" && (
-                      <p className="text-sm text-green-600">✓ File processed and ready for classification and chat</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {uploadedFiles.some((f) => f.status === "completed") && (
-                <div className="mt-6 flex space-x-4">
-                  <Link href="/classification">
-                    <Button className="bg-blue-600 hover:bg-blue-700">
-                      <FileText className="h-4 w-4 mr-2" />
-                      View Classification
-                    </Button>
-                  </Link>
-                  <Link href="/chat">
-                    <Button variant="outline" className="border-red-500 text-red-600 hover:bg-red-50 bg-transparent">
-                      <Brain className="h-4 w-4 mr-2" />
-                      Start Chatting
-                    </Button>
-                  </Link>
-                </div>
-              )}
+              <table className="w-full table-auto border-collapse border border-gray-200">
+                <thead>
+                  <tr className="bg-sky-100">
+                    <th className="border border-gray-300 px-3 py-1 text-left">
+                      File Name
+                    </th>
+                    <th className="border border-gray-300 px-3 py-1 text-left">
+                      Summary
+                    </th>
+                    <th className="border border-gray-300 px-3 py-1 text-left">
+                      Category
+                    </th>
+                    <th className="border border-gray-300 px-3 py-1 text-left">
+                      Domain
+                    </th>
+                    <th className="border border-gray-300 px-3 py-1 text-left">
+                      Technology
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {results.metadata.map((meta, idx) => (
+                    <tr key={idx} className="even:bg-gray-50">
+                      <td className="border border-gray-300 px-3 py-1">
+                        {meta.file_name}
+                      </td>
+                      <td className="border border-gray-300 px-3 py-1">
+                        {meta.summary}
+                      </td>
+                      <td className="border border-gray-300 px-3 py-1">
+                        {meta.category}
+                      </td>
+                      <td className="border border-gray-300 px-3 py-1">
+                        {meta.domain}
+                      </td>
+                      <td className="border border-gray-300 px-3 py-1">
+                        {meta.technology}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </CardContent>
           </Card>
-        )}
+        )} */}
       </div>
     </div>
-  )
+  );
 }

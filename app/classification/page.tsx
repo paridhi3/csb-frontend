@@ -4,6 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { Brain, FileText, Upload, ArrowLeft, RefreshCw } from "lucide-react"
 import Link from "next/link"
+import Header from "../Home/Header"
 
 // Mock data for demonstration
 const classificationData = [
@@ -58,7 +59,7 @@ export default function ClassificationPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-blue-100">
+      {/* <header className="bg-white shadow-sm border-b border-blue-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
@@ -69,7 +70,7 @@ export default function ClassificationPage() {
                 </Button>
               </Link>
               <div className="flex items-center space-x-2">
-                <Brain className="h-6 w-6 text-blue-600" />
+                <Brain className="h-6 w-6 text-sky-800" />
                 <span className="text-lg font-semibold text-gray-900">Classification Dashboard</span>
               </div>
             </div>
@@ -79,7 +80,7 @@ export default function ClassificationPage() {
                 Refresh
               </Button>
               <Link href="/upload">
-                <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                <Button size="sm" className="bg-sky-800 hover:bg-sky-700 cursor-pointer">
                   <Upload className="h-4 w-4 mr-2" />
                   Upload More
                 </Button>
@@ -87,14 +88,15 @@ export default function ClassificationPage() {
             </div>
           </div>
         </div>
-      </header>
+      </header> */}
+      <Header />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
         <div className="mb-8">
           <div className="flex items-center space-x-3 mb-4">
             <div className="p-2 bg-blue-100 rounded-lg">
-              <FileText className="h-6 w-6 text-blue-600" />
+              <FileText className="h-6 w-6 text-sky-800" />
             </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Smart Classification</h1>
@@ -108,9 +110,9 @@ export default function ClassificationPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600">Total Files</p>
-                    <p className="text-2xl font-bold text-blue-600">5</p>
+                    <p className="text-2xl font-bold text-sky-800">5</p>
                   </div>
-                  <FileText className="h-8 w-8 text-blue-600" />
+                  <FileText className="h-8 w-8 text-sky-800" />
                 </div>
               </CardContent>
             </Card>
@@ -157,7 +159,7 @@ export default function ClassificationPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <Brain className="h-5 w-5 text-blue-600" />
+              <Brain className="h-5 w-5 text-sky-800" />
               <span>AI Classification Results</span>
             </CardTitle>
             <CardDescription>
@@ -214,7 +216,7 @@ export default function ClassificationPage() {
                         <div className="flex items-center space-x-2">
                           <div className="w-full bg-gray-200 rounded-full h-2 max-w-[60px]">
                             <div
-                              className="bg-blue-600 h-2 rounded-full"
+                              className="bg-sky-800 h-2 rounded-full"
                               style={{ width: `${item.confidence}%` }}
                             ></div>
                           </div>
@@ -253,7 +255,7 @@ export default function ClassificationPage() {
             <div className="grid md:grid-cols-3 gap-4">
               <div className="p-4 bg-blue-50 rounded-lg">
                 <h4 className="font-semibold text-blue-900 mb-2">Most Common Domain</h4>
-                <p className="text-blue-700">Technology & Software Development</p>
+                <p className="text-sky-700">Technology & Software Development</p>
               </div>
               <div className="p-4 bg-green-50 rounded-lg">
                 <h4 className="font-semibold text-green-900 mb-2">Top Technology</h4>

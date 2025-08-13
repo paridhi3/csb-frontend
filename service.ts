@@ -1,7 +1,7 @@
 // service.ts
 import axios from "axios";
 
-const BASE_URL = "http://localhost:3000";  // Change this to your backend URL
+const BASE_URL = "http://127.0.0.1:8000";  // Change this to your backend URL
 
 // Use File[] type for files parameter
 export const uploadFiles = async (files: File[]): Promise<any> => {

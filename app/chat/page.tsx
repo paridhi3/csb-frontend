@@ -18,6 +18,7 @@ interface Message {
 }
 
 export default function ChatPage() {
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,

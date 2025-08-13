@@ -1,94 +1,50 @@
+"use client";
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Brain, FileText, Upload, ArrowLeft, RefreshCw } from "lucide-react"
 import Link from "next/link"
+import { useEffect, useState } from "react";
 import Header from "../Home/Header"
 
-// Mock data for demonstration
-const classificationData = [
-  {
-    id: 1,
-    fileName: "ecommerce-platform-redesign.pdf",
-    category: "UX/UI Design",
-    domain: "E-commerce",
-    technologies: ["React", "Node.js", "MongoDB", "Stripe"],
-    confidence: 95,
-    status: "Processed",
-  },
-  {
-    id: 2,
-    fileName: "ai-chatbot-implementation.docx",
-    category: "AI/ML",
-    domain: "Customer Service",
-    technologies: ["Python", "TensorFlow", "FastAPI", "Docker"],
-    confidence: 92,
-    status: "Processed",
-  },
-  {
-    id: 3,
-    fileName: "mobile-banking-security.pdf",
-    category: "Security",
-    domain: "FinTech",
-    technologies: ["Swift", "Kotlin", "OAuth", "Biometrics"],
-    confidence: 88,
-    status: "Processed",
-  },
-  {
-    id: 4,
-    fileName: "cloud-migration-strategy.pdf",
-    category: "Infrastructure",
-    domain: "Enterprise",
-    technologies: ["AWS", "Kubernetes", "Terraform", "Jenkins"],
-    confidence: 91,
-    status: "Processing",
-  },
-  {
-    id: 5,
-    fileName: "blockchain-supply-chain.docx",
-    category: "Blockchain",
-    domain: "Supply Chain",
-    technologies: ["Ethereum", "Solidity", "Web3.js", "IPFS"],
-    confidence: 89,
-    status: "Processed",
-  },
-]
+interface ClassificationItem {
+  id: number;
+  fileName: string;
+  category: string;
+  domain: string;
+  technologies: string;
+  confidence: number;
+  status: string;
+}
 
 export default function ClassificationPage() {
+  const [results, setResults] = useState<ClassificationItem[] | null>(null);
+  useEffect(() => {
+    const stored = localStorage.getItem("classificationResults");
+    console.log("classifi.tsx: ", stored);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+
+      // Assuming parsed.metadata is an array of objects with the required fields
+      const formatted = parsed.metadata.map((item: any, index = 0) => ({
+        id: index + 1,
+        fileName: item.file_name,
+        category: item.category,
+        domain: item.domain,
+        technologies: item.technology, // assuming this is an array
+        confidence: item.confidence ?? 90, // optional fallback
+        status: item.status ?? "Processed", // optional fallback
+      }));
+
+      setResults(formatted);
+    }
+  }, []);
+
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
-      {/* Header */}
-      {/* <header className="bg-white shadow-sm border-b border-blue-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <Link href="/">
-                <Button variant="ghost" size="sm">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Home
-                </Button>
-              </Link>
-              <div className="flex items-center space-x-2">
-                <Brain className="h-6 w-6 text-sky-800" />
-                <span className="text-lg font-semibold text-gray-900">Classification Dashboard</span>
-              </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              <Button variant="outline" size="sm">
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Refresh
-              </Button>
-              <Link href="/upload">
-                <Button size="sm" className="bg-sky-800 hover:bg-sky-700 cursor-pointer">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload More
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header> */}
       <Header />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -110,14 +66,14 @@ export default function ClassificationPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600">Total Files</p>
-                    <p className="text-2xl font-bold text-sky-800">5</p>
+                    <p className="text-2xl font-bold text-sky-800">{results?.length ?? 0}</p>
                   </div>
                   <FileText className="h-8 w-8 text-sky-800" />
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
+            {/* <Card>
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -151,7 +107,7 @@ export default function ClassificationPage() {
                   <Brain className="h-8 w-8 text-purple-600" />
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
         </div>
 
@@ -180,7 +136,7 @@ export default function ClassificationPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {classificationData.map((item) => (
+                  {results?.map((item) => (
                     <TableRow key={item.id} className="hover:bg-blue-50">
                       <TableCell className="font-medium">
                         <div className="flex items-center space-x-2">
@@ -200,11 +156,14 @@ export default function ClassificationPage() {
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-wrap gap-1">
-                          {item.technologies.slice(0, 2).map((tech, index) => (
-                            <Badge key={index} variant="secondary" className="text-xs bg-gray-100 text-gray-700">
-                              {tech}
-                            </Badge>
-                          ))}
+                          {item.technologies
+                            .split(",")
+                            .slice(0, 2)
+                            .map((tech, index) => (
+                              <Badge key={index} variant="secondary" className="text-xs bg-gray-100 text-gray-700">
+                                {tech.trim()}
+                              </Badge>
+                            ))}
                           {item.technologies.length > 2 && (
                             <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-700">
                               +{item.technologies.length - 2}

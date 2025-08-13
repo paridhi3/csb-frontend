@@ -58,8 +58,12 @@ export default function UploadPage() {
     setError(null);
     try {
       const data = await uploadFiles(selectedFiles);
-      setResults(data);
+      console.log("upload: ", data);
+      localStorage.setItem("classificationResults", JSON.stringify(data));
       router.push("/classification");
+
+      // setResults(data);
+      // router.push("/classification");
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -200,60 +204,6 @@ export default function UploadPage() {
             </div>
           </CardContent>
         </Card>
-
-        {/* Show results table if available */}
-        {/* {results && results.metadata && results.metadata.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Processed Case Studies Metadata</CardTitle>
-              <CardDescription>Summary of your uploaded files</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <table className="w-full table-auto border-collapse border border-gray-200">
-                <thead>
-                  <tr className="bg-sky-100">
-                    <th className="border border-gray-300 px-3 py-1 text-left">
-                      File Name
-                    </th>
-                    <th className="border border-gray-300 px-3 py-1 text-left">
-                      Summary
-                    </th>
-                    <th className="border border-gray-300 px-3 py-1 text-left">
-                      Category
-                    </th>
-                    <th className="border border-gray-300 px-3 py-1 text-left">
-                      Domain
-                    </th>
-                    <th className="border border-gray-300 px-3 py-1 text-left">
-                      Technology
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {results.metadata.map((meta, idx) => (
-                    <tr key={idx} className="even:bg-gray-50">
-                      <td className="border border-gray-300 px-3 py-1">
-                        {meta.file_name}
-                      </td>
-                      <td className="border border-gray-300 px-3 py-1">
-                        {meta.summary}
-                      </td>
-                      <td className="border border-gray-300 px-3 py-1">
-                        {meta.category}
-                      </td>
-                      <td className="border border-gray-300 px-3 py-1">
-                        {meta.domain}
-                      </td>
-                      <td className="border border-gray-300 px-3 py-1">
-                        {meta.technology}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </CardContent>
-          </Card>
-        )} */}
       </div>
     </div>
   );

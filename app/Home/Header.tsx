@@ -33,12 +33,12 @@ export default function Header() {
             >
               Features
             </Link>
-            <Link
+            {/* <Link
               href="/login"
               className="text-gray-600 hover:text-sky-800 transition-colors cursor-pointer"
             >
               Login
-            </Link>
+            </Link> */}
           </nav>
           <Button
             variant="outline"

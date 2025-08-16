@@ -19,13 +19,16 @@ export const uploadFiles = async (files: File[]): Promise<any> => {
 };
 
 export const chatWithBackend = async (query: string): Promise<string> => {
-  const formData = new FormData();
-  formData.append("query", query);
-
-  const response = await axios.post(`${BASE_URL}/chat`, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
-  return response.data.response; // bot's reply
+  const response = await axios.post(
+    `${BASE_URL}/chat`,
+    { query }, // send as JSON
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  )
+  return response.data.response
 };
 
 export const searchMetadata = async (

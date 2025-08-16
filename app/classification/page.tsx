@@ -16,7 +16,6 @@ interface ClassificationItem {
   domain: string;
   technologies: string;
   confidence: number;
-  status: string;
 }
 
 export default function ClassificationPage() {
@@ -33,9 +32,8 @@ export default function ClassificationPage() {
         fileName: item.file_name,
         category: item.category,
         domain: item.domain,
-        technologies: item.technology, // assuming this is an array
-        confidence: item.confidence ?? 90, // optional fallback
-        status: item.status ?? "Processed", // optional fallback
+        technologies: item.technology,
+        confidence: item.confidence ?? 90,
       }));
 
       setResults(formatted);
@@ -132,7 +130,6 @@ export default function ClassificationPage() {
                     <TableHead>Domain</TableHead>
                     <TableHead>Technologies</TableHead>
                     <TableHead>Confidence</TableHead>
-                    <TableHead>Status</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -164,9 +161,9 @@ export default function ClassificationPage() {
                                 {tech.trim()}
                               </Badge>
                             ))}
-                          {item.technologies.length > 2 && (
+                          {item.technologies.split(",").length > 2 && (
                             <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-700">
-                              +{item.technologies.length - 2}
+                              +{item.technologies.split(",").length - 2}
                             </Badge>
                           )}
                         </div>
@@ -182,18 +179,6 @@ export default function ClassificationPage() {
                           <span className="text-sm font-medium">{item.confidence}%</span>
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={item.status === "Processed" ? "default" : "secondary"}
-                          className={
-                            item.status === "Processed"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-yellow-100 text-yellow-800"
-                          }
-                        >
-                          {item.status}
-                        </Badge>
-                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -203,7 +188,7 @@ export default function ClassificationPage() {
         </Card>
 
         {/* AI Insights */}
-        <Card className="mt-6">
+        {/* <Card className="mt-6">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Brain className="h-5 w-5 text-purple-600" />
@@ -226,7 +211,7 @@ export default function ClassificationPage() {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
     </div>
   )

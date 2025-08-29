@@ -32,25 +32,25 @@ interface Message {
 
 export default function ChatPage() {
   const [results, setResults] = useState<ClassificationItem[] | null>(null);
-    useEffect(() => {
-      const stored = localStorage.getItem("classificationResults");
-      console.log("classifi.tsx: ", stored);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-  
-        // Assuming parsed.metadata is an array of objects with the required fields
-        const formatted = parsed.metadata.map((item: any, index = 0) => ({
-          id: index + 1,
-          fileName: item.file_name,
-          category: item.category,
-          domain: item.domain,
-          technologies: item.technology,
-          confidence: item.confidence ?? 90,
-        }));
-  
-        setResults(formatted);
-      }
-    }, []);
+  useEffect(() => {
+    const stored = localStorage.getItem("classificationResults");
+    console.log("classifi.tsx: ", stored);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+
+      // Assuming parsed.metadata is an array of objects with the required fields
+      const formatted = parsed.metadata.map((item: any, index = 0) => ({
+        id: index + 1,
+        fileName: item.file_name,
+        category: item.category,
+        domain: item.domain,
+        technologies: item.technology,
+        confidence: item.confidence ?? 90,
+      }));
+
+      setResults(formatted);
+    }
+  }, []);
 
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -115,7 +115,8 @@ export default function ChatPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid lg:grid-cols-4 gap-6">
+        <div className="grid lg:grid-cols-5 gap-6">
+
           {/* Sidebar */}
           <div className="lg:col-span-1 space-y-4">
             <Card>
@@ -127,40 +128,23 @@ export default function ChatPage() {
                 <CardDescription>{results?.length ?? 0} case study files</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
-                {results?.map((item) => (
-                  <div key={item.id} className="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg">
-                    <FileText className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm truncate" title={item.fileName}>{item.fileName}</span>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center space-x-2">
-                  <Sparkles className="h-5 w-5 text-purple-600" />
-                  <span>Suggested Questions</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {suggestedQuestions.map((question, index) => (
-                  <Button
-                    key={index}
-                    variant="ghost"
-                    className="w-full text-left justify-start h-auto p-3 text-sm"
-                    onClick={() => setInputMessage(question)}
-                  >
-                    {question}
-                  </Button>
-                ))}
+                {results && results.length > 0 ? (
+                  results.map((item) => (
+                    <div key={item.id} className="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg">
+                      <FileText className="h-4 w-4 text-gray-500" />
+                      <span className="text-sm truncate" title={item.fileName}>{item.fileName}</span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500 italic">No files uploaded</p>
+                )}
               </CardContent>
             </Card>
           </div>
 
           {/* Chat Area */}
           <div className="lg:col-span-3">
-            <Card className="h-[600px] flex flex-col">
+            <Card className="min-h-[500px] flex flex-col">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Brain className="h-5 w-5 text-red-600" />
@@ -173,7 +157,7 @@ export default function ChatPage() {
 
               <CardContent className="flex-1 flex flex-col">
                 {/* Messages */}
-                <ScrollArea className="flex-1 pr-4">
+                <ScrollArea className="flex-1 pr-4 overflow-y-auto">
                   <div className="space-y-4">
                     {messages.map((message) => (
                       <div
@@ -243,7 +227,7 @@ export default function ChatPage() {
                     <Button
                       onClick={handleSendMessage}
                       disabled={!inputMessage.trim() || isTyping}
-                      className="bg-red-600 hover:bg-red-700"
+                      className="bg-red-600 hover:bg-red-700 cursor-pointer"
                     >
                       <Send className="h-4 w-4" />
                     </Button>
@@ -252,6 +236,30 @@ export default function ChatPage() {
                     AI agents will search across all your uploaded case studies to provide comprehensive answers.
                   </p>
                 </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Suggested Questions */}
+          <div className="lg:col-span-1 space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center space-x-2">
+                  <Sparkles className="h-5 w-5 text-purple-600" />
+                  <span>Suggested Questions</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {suggestedQuestions.map((question, index) => (
+                  <Button
+                    key={index}
+                    variant="ghost"
+                    className="w-full text-left justify-start h-auto p-3 text-sm whitespace-normal break-words cursor-pointer"
+                    onClick={() => setInputMessage(question)}
+                  >
+                    {question}
+                  </Button>
+                ))}
               </CardContent>
             </Card>
           </div>

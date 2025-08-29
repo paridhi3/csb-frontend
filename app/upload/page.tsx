@@ -61,9 +61,6 @@ export default function UploadPage() {
       console.log("upload: ", data);
       localStorage.setItem("classificationResults", JSON.stringify(data));
       router.push("/classification");
-
-      // setResults(data);
-      // router.push("/classification");
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);

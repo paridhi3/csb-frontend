@@ -34,9 +34,9 @@ export default function Features() {
                 <li>Technology stack identification</li>
                 <li>Comprehensive metadata extraction</li>
               </ul>
-              <Link href="/classification">
+              {/* <Link href="/classification">
                 <Button className="cursor-pointer w-full bg-sky-800 hover:bg-sky-700">View Classification Table</Button>
-              </Link>
+              </Link> */}
             </CardContent>
           </Card>
 
@@ -59,9 +59,9 @@ export default function Features() {
                 <li>Get contextual answers with references</li>
                 <li>Discover patterns & insights</li>
               </ul>
-              <Link href="/chat">
+              {/* <Link href="/chat">
                 <Button className="cursor-pointer w-full bg-red-600 hover:bg-red-700">Start Chatting</Button>
-              </Link>
+              </Link> */}
             </CardContent>
           </Card>
         </div>

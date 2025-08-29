@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Brain, FileText, Upload, ArrowLeft, RefreshCw } from "lucide-react"
+import { Brain, FileText, Upload, ArrowLeft, RefreshCw, MessageSquare } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react";
 import Header from "../Home/Header"
@@ -119,14 +119,29 @@ export default function ClassificationPage() {
         {/* Classification Table */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Brain className="h-5 w-5 text-sky-800" />
-              <span>AI Classification Results</span>
-            </CardTitle>
-            <CardDescription>
-              Detailed analysis and categorization performed by our intelligent AI agents
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center space-x-2 text-lg">
+                  <Brain className="h-5 w-5 text-sky-800" />
+                  <span>AI Classification Results</span>
+                </CardTitle>
+                <CardDescription>
+                  Detailed analysis and categorization performed by our intelligent AI agents
+                </CardDescription>
+              </div>
+              <Link href="/chat">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="cursor-pointer border-red-500 text-red-600 hover:bg-red-50 px-6 py-2 text-sm bg-transparent"
+                >
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  Chat with Files
+                </Button>
+              </Link>
+            </div>
           </CardHeader>
+
           <CardContent>
             <div className="overflow-x-auto">
               <Table>

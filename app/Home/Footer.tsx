@@ -8,8 +8,8 @@ export default function Footer() {
         <div className="grid md:grid-cols-4 gap-8">
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <Brain className="h-6 w-6 text-blue-400" />
-              <span className="text-lg font-bold">Case Study AI</span>
+              {/* <Brain className="h-6 w-6 text-blue-400" /> */}
+              <span className="text-xl font-bold">Genpact</span>
             </div>
             <p className="text-gray-400">
               Intelligent case study analysis powered by advanced AI agents.
@@ -109,8 +109,7 @@ export default function Footer() {
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
           <p>
-            &copy; 2025 Case Study AI. All rights reserved. Powered by
-            intelligent AI agents.
+            &copy; 2025 Genpact. All rights reserved.
           </p>
         </div>
       </div>

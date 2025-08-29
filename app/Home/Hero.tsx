@@ -36,16 +36,6 @@ export default function Hero() {
                   Upload Case Studies
                 </Button>
               </Link>
-              <Link href="/chat">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="cursor-pointer border-red-500 text-red-600 hover:bg-red-50 px-8 py-3 text-lg bg-transparent"
-                >
-                  <MessageSquare className="h-5 w-5 mr-2" />
-                  Chat with Files
-                </Button>
-              </Link>
             </div>
 
             <div className="flex items-center space-x-6 text-sm text-gray-500">

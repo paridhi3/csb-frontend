@@ -15,7 +15,10 @@ interface ClassificationItem {
   category: string;
   domain: string;
   technologies: string;
-  confidence: number;
+  category_confidence: number;
+  domain_confidence: number;
+  technology_confidence: number;
+  avg_confidence: number;
 }
 
 export default function ClassificationPage() {
@@ -33,7 +36,11 @@ export default function ClassificationPage() {
         category: item.category,
         domain: item.domain,
         technologies: item.technology,
-        confidence: item.confidence ?? 90,
+        avg_confidence: Number((
+          (item.category_confidence +
+            item.domain_confidence +
+            item.technology_confidence) / 3
+        ) * 100).toFixed(2),
       }));
 
       setResults(formatted);
@@ -129,7 +136,7 @@ export default function ClassificationPage() {
                     <TableHead>Category</TableHead>
                     <TableHead>Domain</TableHead>
                     <TableHead>Technologies</TableHead>
-                    <TableHead>Confidence</TableHead>
+                    <TableHead>Average Confidence</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -170,13 +177,13 @@ export default function ClassificationPage() {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
-                          <div className="w-full bg-gray-200 rounded-full h-2 max-w-[60px]">
+                          {/* <div className="w-full bg-gray-200 rounded-full h-2 max-w-[60px]">
                             <div
                               className="bg-sky-800 h-2 rounded-full"
-                              style={{ width: `${item.confidence}%` }}
+                              style={{ width: `${item.avg_confidence}%` }}
                             ></div>
-                          </div>
-                          <span className="text-sm font-medium">{item.confidence}%</span>
+                          </div> */}
+                          <span className="text-sm font-medium">{item.avg_confidence}%</span>
                         </div>
                       </TableCell>
                     </TableRow>
